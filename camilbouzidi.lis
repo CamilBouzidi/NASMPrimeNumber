@@ -1,0 +1,41 @@
+     1                                  ;Camil Bouzidi, ID #40099611, SOEN 228 Section U Assembly Language Assignment, April 10th 2019
+     2                                  section .data
+     3                                  
+     4                                  
+     5                                  
+     6 00000000 05                      number db  5	; This is the number to be tested, 5 was given to us, but any works. 
+     7 00000001 01                      answer db  1    ;  1 means number is prime, 0 means number is not prime
+     8                                  section .bss
+     9                                   ;No unitialized data was needed in this particular program.
+    10                                  section .text
+    11                                          global _start
+    12                                  
+    13                                  _start:
+    14 00000000 BE[00000000]                   mov esi, number ; get the offset of number into esi  
+    15 00000005 B800000000              keith: mov eax, 0      ; clear the entire eax register
+    16 0000000A 8A06                           mov al, [esi]   ; get the number from memory into al
+    17 0000000C 88C2                           mov dl, al      ; put it inside dl as well
+    18 0000000E B302                           mov bl, 2       ; bl holds each divisor starting from 2
+    19 00000010 F6F3                    loopy: div bl          ; ax / bl  with quot in al and rem in ah
+    20 00000012 662500FF                       and ax, 1111111100000000b   ;  isolate the rem in ah with a  AND mask
+    21                                                         ; to determine whether the remainder is 0
+    22 00000016 80FC00                         cmp ah,0        ; compares the value of the remainder ah to 0
+    23 00000019 740F                           je  change      ; if the remainder is equal to 0, got to change
+    24 0000001B FEC3                           inc bl          ; increment the counter if the remainder is not equal to 0
+    25 0000001D B800000000                     mov eax, 0      ; clear the entire eax register
+    26 00000022 8A06                           mov al, [esi]   ; get the number from memory into al
+    27 00000024 38D3                           cmp bl,dl       ; check if the counter is less than the number
+    28 00000026 7CE8                           jl loopy        ; if the counter is less than the number, you can divide the number again
+    29 00000028 EB07                           jmp finished    ; if this point is reached, then it means that the counter is equal to the number and
+    30                                  		       ; that the answer is now final
+    31                                         
+    32 0000002A C605[01000000]00        change: mov [answer], byte 0; Confirm that the number is not prime. since the space allocated to answer is 1 byte,
+    33                                  			    ; 1 byte of value 0 is moved to it.
+    34                                  
+    35                                  
+    36                                  
+    37                                  finished:
+    38 00000031 8B0D[01000000]                 mov ecx, [answer] ; for debugging purposes only. Used to verify the value of answer quickly.
+    39 00000037 B801000000                     mov eax,1         ; beginning of the steps to close the program.
+    40 0000003C BB00000000                     mov ebx,0	 ; intermediate step to end the program.
+    41 00000041 CD80                           int 0x80		 ; interrupt signal to end the program.
